@@ -383,17 +383,57 @@ public:
 
   /// Parse the version number as with getOSVersion and then translate generic
   /// "darwin" versions to the corresponding OS X versions.  This may also be
-  /// called with IOS triples but the OS X version number is just set to a
+  /// called with iOS triples but the OS X version number is just set to a
   /// constant 10.4.0 in that case.  Returns true if successful.
   bool getMacOSXVersion(VersionTuple &Version) const;
+
+  /// @brief Emit to client.
+  bool getMacOSXVersion(unsigned &Major, unsigned &Minor, unsigned &Micro) const {
+    VersionTuple Version;
+    if (!getMacOSXVersion(Version)) {
+      return false;
+    }
+    Major = Version.getMajor();
+    if (Version.getMinor().has_value()) {
+      Minor = Version.getMinor().value();
+    }
+    if (Version.getSubminor().has_value()) {
+      Minor = Version.getSubminor().value();
+    }
+    return true;
+  }
 
   /// Parse the version number as with getOSVersion.  This should only be called
   /// with IOS or generic triples.
   VersionTuple getiOSVersion() const;
 
+  /// @brief Emit to client.
+  void getiOSVersion(unsigned &Major, unsigned &Minor, unsigned &Micro) const {
+    VersionTuple Version = getiOSVersion();
+    Major = Version.getMajor();
+    if (Version.getMinor().has_value()) {
+      Minor = Version.getMinor().value();
+    }
+    if (Version.getSubminor().has_value()) {
+      Minor = Version.getSubminor().value();
+    }
+  }
+
   /// Parse the version number as with getOSVersion.  This should only be called
   /// with WatchOS or generic triples.
   VersionTuple getWatchOSVersion() const;
+
+  /// @brief Emit to client.
+  void getWatchOSVersion(unsigned &Major, unsigned &Minor, unsigned &Micro) const {
+    VersionTuple Version = getWatchOSVersion();
+    Major = Version.getMajor();
+    if (Version.getMinor().has_value()) {
+      Minor = Version.getMinor().value();
+    }
+    if (Version.getSubminor().has_value()) {
+      Minor = Version.getSubminor().value();
+    }
+  }
 
   /// Parse the version number as with getOSVersion.
   VersionTuple getDriverKitVersion() const;
