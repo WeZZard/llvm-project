@@ -21,6 +21,8 @@
 namespace llvm {
 
 struct InlineParams;
+class StringRef;
+class ModuleSummaryIndex;
 class ModulePass;
 class Pass;
 class BasicBlock;
@@ -96,6 +98,10 @@ ModulePass *createGVExtractionPass(std::vector<GlobalValue*>& GVs, bool
                                   deleteFn = false, bool keepConstInit = false);
 
 //===----------------------------------------------------------------------===//
+/// This pass performs iterative function importing from other modules.
+Pass *createFunctionImportPass();
+
+//===----------------------------------------------------------------------===//
 /// createFunctionInliningPass - Return a new pass object that uses a heuristic
 /// to inline direct function calls to small functions.
 ///
@@ -144,6 +150,13 @@ ModulePass *createDeadArgEliminationPass();
 /// functions as well.  This is definitely not safe, and should only be used by
 /// bugpoint.
 ModulePass *createDeadArgHackingPass();
+
+//===----------------------------------------------------------------------===//
+/// createArgumentPromotionPass - This pass promotes "by reference" arguments to
+/// be passed by value if the number of elements passed is smaller or
+/// equal to maxElements (maxElements == 0 means always promote).
+///
+Pass *createArgumentPromotionPass(unsigned maxElements = 3);
 
 //===----------------------------------------------------------------------===//
 /// createOpenMPOptLegacyPass - OpenMP specific optimizations.
@@ -239,6 +252,16 @@ ModulePass *createCrossDSOCFIPass();
 /// This pass splits globals into pieces for the benefit of whole-program
 /// devirtualization and control-flow integrity.
 ModulePass *createGlobalSplitPass();
+
+//===----------------------------------------------------------------------===//
+// SampleProfilePass - Loads sample profile data from disk and generates
+// IR metadata to reflect the profile.
+ModulePass *createSampleProfileLoaderPass();
+ModulePass *createSampleProfileLoaderPass(StringRef Name);
+
+/// Write ThinLTO-ready bitcode to Str.
+ModulePass *createWriteThinLTOBitcodePass(raw_ostream &Str,
+                                          raw_ostream *ThinLinkOS = nullptr);
 
 } // End llvm namespace
 

@@ -521,6 +521,18 @@ FunctionPass *createLoopVersioningPass();
 //
 FunctionPass *createLoopDataPrefetchPass();
 
+///===---------------------------------------------------------------------===//
+
+/**
+ * @brief Name-anonymous-global pass for legacy pass manager.
+*/
+ModulePass *createNameAnonGlobalPass();
+
+/**
+ * @brief Canonicalize aliases pass for legacy pass manager.
+*/
+ModulePass *createCanonicalizeAliasesPass();
+
 //===----------------------------------------------------------------------===//
 //
 // LibCallsShrinkWrap - Shrink-wraps a call to function if the result is not
