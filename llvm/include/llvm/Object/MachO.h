@@ -494,6 +494,7 @@ public:
   // MachO specific.
   std::error_code getLibraryShortNameByIndex(unsigned Index, StringRef &) const;
   uint32_t getLibraryCount() const;
+  Expected<StringRef> getLibraryNameAtIndex(unsigned Index) const;
 
   section_iterator getRelocationRelocatedSection(relocation_iterator Rel) const;
 
@@ -856,6 +857,7 @@ private:
   const char *DyldInfoLoadCmd = nullptr;
   const char *FuncStartsLoadCmd = nullptr;
   const char *DyldChainedFixupsLoadCmd = nullptr;
+  const char *DyldExportsTrieLoadCmd = nullptr;
   const char *UuidLoadCmd = nullptr;
   bool HasPageZeroSegment = false;
 };

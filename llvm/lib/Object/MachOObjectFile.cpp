@@ -1386,6 +1386,11 @@ MachOObjectFile::MachOObjectFile(MemoryBufferRef Object, bool IsLittleEndian,
                *this, Load, I, &DyldChainedFixupsLoadCmd,
                "LC_DYLD_CHAINED_FIXUPS", Elements, "chained fixups")))
         return;
+    } else if (Load.C.cmd == MachO::LC_DYLD_EXPORTS_TRIE) {
+      if ((Err = checkLinkeditDataCommand(
+               *this, Load, I, &DyldExportsTrieLoadCmd,
+               "LC_DYLD_EXPORTS_TRIE", Elements, "exports trie")))
+        return;
     } else if (Load.C.cmd == MachO::LC_UUID) {
       if (Load.C.cmdsize != sizeof(MachO::uuid_command)) {
         Err = malformedError("LC_UUID command " + Twine(I) + " has incorrect "
@@ -2571,6 +2576,20 @@ std::error_code MachOObjectFile::getLibraryShortNameByIndex(unsigned Index,
 
 uint32_t MachOObjectFile::getLibraryCount() const {
   return Libraries.size();
+}
+
+Expected<StringRef> MachOObjectFile::getLibraryNameAtIndex(unsigned Index) const {
+  Expected<MachO::dylib_command> CommandOrError = getStructOrErr<MachO::dylib_command>(*this, Libraries[Index]);
+  if (!CommandOrError) {
+    return Expected<StringRef>(CommandOrError.takeError());
+  }
+  MachO::dylib_command D = CommandOrError.get();
+  if (D.dylib.name >= D.cmdsize) {
+    return Expected<StringRef>(errorCodeToError(object_error::parse_failed));
+  }
+  const char *P = (const char *)(Libraries[Index]) + D.dylib.name;
+  StringRef Name = StringRef(P);
+  return Expected<StringRef>(Name);
 }
 
 section_iterator
